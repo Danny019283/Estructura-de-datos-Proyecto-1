@@ -28,5 +28,11 @@ class Lista_Paciente:
                 return paciente
         return None
 
-    def ordenar_edad(self):
-        pass
+    def ordenar_edad_insercion(self):
+        for i in range(1, len(self.__pacientes)):
+            aux = self.__pacientes[i]
+            j = i - 1
+            while j >= 0 and self.__pacientes[j].edad > aux.edad:
+                self.__pacientes[j + 1] = self.__pacientes[j]
+                j -= 1
+                self.__pacientes[j + 1] = aux
