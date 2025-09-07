@@ -1,143 +1,66 @@
 @startuml
-title Gimanasioo PowerLab - Diagrama de Clases
+title Gestión Hospitalaria
 
-' ===================== CLASES PRINCIPALES =====================
-class Sucursal {
-  - string cod
-  - string provi
-  - string canton
-  - string correo
-  - int telef
-  - List<Instructor> instructores
+class Paciente {
+    - cedula: int
+    - nombre: string
+    - edad: int
 }
 
-class Instructor {
-  - string cedula
-  - string nombreCom
-  - int telef
-  - string correo
-  - string fechaNac
-  - List<string> especialidad
+class Personal {
+    - cedula: int
+    - nombre: string
+    - puesto: string
 }
 
-class Cliente {
-  - string cedula
-  - string nombre
-  - int telef
-  - string correo
-  - string fechaNac
-  - string sexo
-  - string fechaInscrip
-  - int edad
-  - Instructor instructor
-  - HistorialMediciones historial
+class Diagnostico {
+    - descripcion: string
+    - gravedad: string
+    - fecha: string
 }
 
-class Medicion {
-  - Cliente cliente
-  - float peso
-  - float estatura
-  - float porcGrasa
-  - float porcMusculo
-  - int edadMetabolica
-  - float porcGrasaVis
-  - float cintura
-  - float pecho
-  - float muslo
-  - float imc
-  - string clasifImc
-  - float recomAgua
-  - float recomProte
-
-  + float calcImc(float peso, float estatura)
-  + string calcClasifImc(float imc)
-  + float calcEdadMeta(float peso, float altura, int edad, string sexo)
-  + float calcRecomAgua(float peso, bool ejercicio, string sexo)
-  + float calcRecomProte(float peso, bool ejercicio, string sexo)
-  + string reporteMedicion()
+class Lista_Paciente {
+    - pacientes: list
+    + CRUD()
+    + buscar(cedula: int): Paciente
+    + ordenar_edad()
+    + ordenar_fecha_ingreso()
+    + generar_estadis()
 }
 
-class Rutina {
-  - string pecho
-  - string triceps
-  - string biceps
-  - string piernas
-  - string espalda
+class Cola_Emergencia {
+    - cola_pacientes: list
+    + insertar(paciente: Paciente, prioridad: int): bool
+    + primero(): Paciente
+    + atender()
+    + mostrar_espera()
 }
 
-class ClaseGrupal {
-  - string id
-  - int cupoMax
-  - int numSalon
-  - string especialidad
-  - string horario
-  - Instructor instructor
-  - List<Cliente> inscritos
+class Consulta {
+    - paciente: Paciente
+    - medico: Personal
 }
 
-' ===================== CLASES DE COLECCIONES =====================
-class ColeccionGenerica<T> {
-  + bool agregar(T elemento)
-  + bool modificar(T elemento)
-  + bool eliminar(T elemento)
-  + string toString()
+class Historial_Consultas {
+    - pila_consultas: list
+    + empujar(consulta: Consulta)
+    + deshacer_ult_cons()
+    + mostrar_historial()
 }
 
-class ColeccionClientes {
-  - List<Cliente> clientes
-  + Cliente buscar(string cedula)
-}
-class ColeccionClases {
-  - List<ClaseGrupal> clases
-  + ClaseGrupal buscar(string id)
-  + bool verificarMaxClasesIns(Cliente cliente)
-}
-class ColeccionSucursales {
-  - List<Sucursal> sucursales
-  + Sucursal buscar(string cod)
-}
-class ColeccionMediciones {
-  - List<Medicion> mediciones
-  + Medicion buscar(string id)
-}
-class ColeccionInstructores {
-  - List<Instructor> instructores
-  + Instructor buscar(string cedula)
+class Jerarquia_Medica {
+    - arbol_personal: list
+    + insertar(personal: Personal)
+    + borrar(personal: Personal)
+    + buscar(personal: Personal)
+    + mostrar_jerarquia()
 }
 
-ColeccionClientes --|> ColeccionGenerica
-ColeccionClases --|> ColeccionGenerica
-ColeccionSucursales --|> ColeccionGenerica
-ColeccionMediciones --|> ColeccionGenerica
-ColeccionInstructores --|> ColeccionGenerica
-
-' ===================== HISTORIAL =====================
-class HistorialMediciones {
-  - List<Medicion> historial
-  + encolar(Medicion m)
-  + desencolar()
-  + verPrimero()
-  + estaVacia()
-}
-
-' ===================== RELACIONES =====================
-Sucursal "1" -- "n" Instructor
-Sucursal "1" -- "0..8" ClaseGrupal
-
-Cliente "1" -- "1" Instructor
-Cliente "1" -- "1" Rutina
-Cliente "1" -- "1" HistorialMediciones
-
-HistorialMediciones "1" o-- "n" Medicion
-Medicion "1" -- "1" Cliente
-
-ClaseGrupal "1" -- "n" Cliente
-ClaseGrupal "1" -- "1" Instructor
-
-ColeccionClientes "1" o-- "n" Cliente
-ColeccionClases "1" o-- "n" ClaseGrupal
-ColeccionSucursales "1" o-- "n" Sucursal
-ColeccionMediciones "1" o-- "n" Medicion
-ColeccionInstructores "1" o-- "n" Instructor
-
-@enduml
+' Relaciones
+Lista_Paciente "1" o-- "*" Paciente : contiene >
+Diagnostico "0..*" *-- "1" Paciente : tiene >
+Jerarquia_Medica "1" o-- "*" Personal : contiene >
+Cola_Emergencia "1" o-- "0..*" Diagnostico : contiene >
+Historial_Consultas "1" o-- "*" Consulta : contiene >
+Consulta "1" *-- "1" Paciente: tiene
+Consulta "1" *-- "1" Personal: tienel
