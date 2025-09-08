@@ -1,6 +1,7 @@
 class Diagnostico:
     def __init__(self, descripcion, gravedad, fecha, paciente):
         self.__descripcion = descripcion
+        # gravedad baja = 3, media = 2, alta = 1
         self.__gravedad = gravedad
         self.__fecha = fecha
         self.__paciente = paciente
