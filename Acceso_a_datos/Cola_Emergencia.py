@@ -28,7 +28,12 @@ class Cola_Emergencia:
         return paciente
 
     def atender(self):
-        #elimina y lo devuelve el paciente con mayor prioridad
+        #elimina y lo devuelve
+        #
+        # el paciente con mayor prioridad
+
+
+
         if self.esta_vacia():
             return None
         return heapq.heappop(self.__cola_pacientes)
