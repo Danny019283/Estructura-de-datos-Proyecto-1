@@ -18,4 +18,4 @@ class Consulta:
         self.__medico = medico
 
     def __str__(self):
-        return f"Consutla[paciente: {self.__paciente}, medico: {self.__medico}]"
+        return f"Consulta[paciente: {self.__paciente} \nmedico: {self.__medico}]"

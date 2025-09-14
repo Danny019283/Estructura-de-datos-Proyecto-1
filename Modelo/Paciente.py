@@ -30,9 +30,13 @@ class Paciente:
     def fecha_ingreso(self):
         return self.__fecha_ingreso
     @fecha_ingreso.setter
-    def fecha_ingreso(self,fecha_ingreso):
+    def fecha_ingreso(self, fecha_ingreso):
         self.__fecha_ingreso = fecha_ingreso
 
+    def fecha_con_formato(self):
+        return f"{self.__fecha_ingreso.day}/{self.__fecha_ingreso.month}/{self.__fecha_ingreso.year}"
+
+
     def __str__(self):
-        return (f"Paciente[ cedula: {self.__cedula}, nombre: {self.__nombre},"
-                f"edad: {self.__edad}, fecha de ingreso: {self.__fecha_ingreso})]")
+        return (f"Paciente[cedula: {self.__cedula}, nombre: {self.__nombre}, "
+                f"edad: {self.__edad}, fecha de ingreso: {self.fecha_con_formato()})]")

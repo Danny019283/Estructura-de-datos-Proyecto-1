@@ -27,6 +27,9 @@ class Diagnostico:
     def fecha(self, fecha):
         self.__fecha = fecha
 
+    def fecha_con_formato(self):
+        return f"{self.__fecha.day}/{self.__fecha.month}/{self.__fecha.year}"
+
     @property
     def paciente(self):
         return self.__paciente
@@ -36,4 +39,4 @@ class Diagnostico:
 
     def __str__(self):
         return (f"Diagnostico[descripcion: {self.__descripcion}, gravedad: {self.__gravedad}, "
-                f"fecha: {self.__fecha}, paciente: {self.__paciente}]")
+                f"fecha: {self.fecha_con_formato()}, paciente: {self.__paciente}]")

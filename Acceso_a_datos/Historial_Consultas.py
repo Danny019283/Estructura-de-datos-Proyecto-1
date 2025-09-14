@@ -1,15 +1,22 @@
+from datetime import datetime
+from Acceso_a_datos.Manejo_De_Archivos import Manejo_De_Archivos as fs
+
+
 class Historial_Consultas:
     def __init__(self):
-        self.__pila_consultas = []
+        self.__pila_consultas = fs.cargar_datos("Historial Consultas")
 
     def empujar(self, consulta, diagnostico=None):
         self.__pila_consultas.append((consulta, diagnostico))
+        fs.guardar_datos("Historial Consultas", self.__pila_consultas)
         return True
 
     def deshacer_ult_cons(self):
         if self.esta_vacia():
             return None
-        return self.__pila_consultas.pop()
+        eliminado = self.__pila_consultas.pop()
+        fs.guardar_datos("Historial Consultas", self.__pila_consultas)
+        return eliminado
 
     def mostrar_historial(self):
         return list(reversed(self.__pila_consultas))
@@ -17,22 +24,22 @@ class Historial_Consultas:
     def esta_vacia(self):
         return len(self.__pila_consultas) == 0
 
-    def __len__(self):
-        return len(self.__pila_consultas)
+    def consultas_ultimo_mes(self, i = 0, cont = 0,  ultimo_mes = None):
+        if self.esta_vacia():
+            return 0
+        if ultimo_mes is None:
+            ultimo_mes = datetime(datetime.now().year, datetime.now().month, datetime.now().day)
+        if i >= len(self.__pila_consultas):
+            return cont
+        if self.__pila_consultas[i][1].fecha.year == ultimo_mes.year:
+            if self.__pila_consultas[i][1].fecha.month == ultimo_mes.month:
+                cont += 1
+        return self.consultas_ultimo_mes(i + 1, cont, ultimo_mes)
 
     def __str__(self):
         if self.esta_vacia():
             return "Historial vacío"
-        lines = []
-        for consulta, diagnostico in reversed(self.__pila_consultas):
-            try:
-                paciente_nombre = consulta.paciente.nombre
-            except Exception:
-                paciente_nombre = str(consulta)
-            if diagnostico is not None:
-                prio_map = {1: "ALTA", 2: "MEDIA", 3: "BAJA"}
-                prio_label = prio_map.get(diagnostico.gravedad, str(diagnostico.gravedad))
-                lines.append(f"- {paciente_nombre} ({diagnostico.descripcion}) [Prioridad {prio_label}]")
-            else:
-                lines.append(f"- {paciente_nombre} (consulta sin diagnóstico registrado)")
-        return "\n".join(lines)
+        mostrar = f""
+        for consulta, diagnostico in self.__pila_consultas:
+            mostrar += f"{consulta}:\n {diagnostico}\n\n"
+        return mostrar

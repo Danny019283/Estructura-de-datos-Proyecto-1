@@ -1,4 +1,4 @@
-from Logica_de_negocio import Personal
+from Modelo import Personal
 
 class NodoArbol:
     def __init__(self, personal: Personal):

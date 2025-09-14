@@ -1,10 +1,15 @@
+
+from Acceso_a_datos.Manejo_De_Archivos import Manejo_De_Archivos as fs
+
+
 class Lista_Paciente:
     def __init__(self):
-        self.__pacientes = []
+        self.__pacientes = fs.cargar_datos("Pacientes")
 
     def insertar_pacientes(self, paciente):
         if paciente not in self.__pacientes:
             self.__pacientes.append(paciente)
+            fs.guardar_datos("Pacientes", self.__pacientes)
             return True
         return False
 
@@ -13,6 +18,7 @@ class Lista_Paciente:
             if pac == paciente:
                 self.__pacientes.remove(pac)
                 self.insertar_pacientes(paciente)
+                fs.guardar_datos("Pacientes", self.__pacientes)
                 return True
         return False
 
@@ -20,6 +26,7 @@ class Lista_Paciente:
         paciente = self.buscar_paciente(cedula)
         if paciente is not None:
             self.__pacientes.remove(paciente)
+            fs.guardar_datos("Pacientes", self.__pacientes)
             return True
         return False
 
@@ -38,7 +45,7 @@ class Lista_Paciente:
                 j -= 1
                 self.__pacientes[j + 1] = aux
 
-    def odenar_fecha_mergesort(self, arr = None):
+    def ordenar_fecha_mergesort(self, arr = None):
         if arr is None:
             arr = self.__pacientes
             #caso 1
@@ -48,8 +55,8 @@ class Lista_Paciente:
         arr_izq = arr[:mitad]
         arr_der = arr[mitad:]
 
-        arr_izq_orden = self.odenar_fecha_mergesort(arr_izq)
-        arr_der_orden = self.odenar_fecha_mergesort(arr_der)
+        arr_izq_orden = self.ordenar_fecha_mergesort(arr_izq)
+        arr_der_orden = self.ordenar_fecha_mergesort(arr_der)
 
         return self.fecha_merge(arr_izq_orden, arr_der_orden)
 
@@ -64,7 +71,31 @@ class Lista_Paciente:
                 arr_der.pop(0)
         return arr_resultado
 
+    #falta definirla del todo
     def generar_estadis(self, i=0):
         if i == len(self.__pacientes):
             return []
-        return [self.__pacientes[i]] + self.generar_estadis(self.__pacientes, i + 1)
+        return [self.__pacientes[i]] + self.generar_estadis(i + 1)
+
+    def estaVacia(self):
+        if len(self.__pacientes) == 0:
+            return True
+        return False
+
+    def edad_promedio(self, i = 0, suma_edad = 0):
+        if self.estaVacia():
+            return 0
+        if i >= len(self.__pacientes):
+            return  suma_edad/len(self.__pacientes)
+        suma_edad += self.__pacientes[i].edad
+        return self.edad_promedio(i + 1, suma_edad)
+
+
+    def __str__(self):
+        if self.estaVacia():
+            return f"No hay pacientes registrados"
+        mostrar = f""
+        for paciente in self.__pacientes:
+            mostrar += f"{paciente}\n"
+        return mostrar
+
