@@ -16,12 +16,13 @@ class Manejo_De_Archivos:
     @staticmethod
     def guardar_datos(nombre ,lista):
         ruta = Manejo_De_Archivos._ruta_archivo(nombre)
-        with open(ruta, "wb") as f:
+        with open(ruta, "wb") as f: #guarda los archivos en binario
             pickle.dump(lista, f)
 
     @staticmethod
     def cargar_datos(nombre):
         ruta = Manejo_De_Archivos._ruta_archivo(nombre)
+        #carga los datos del archivo si no existe los crea
         try:
             with open(ruta, "rb") as f:
                 return pickle.load(f)

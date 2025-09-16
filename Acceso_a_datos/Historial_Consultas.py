@@ -28,11 +28,11 @@ class Historial_Consultas:
         if self.esta_vacia():
             return 0
         if ultimo_mes is None:
-            ultimo_mes = datetime(datetime.now().year, datetime.now().month, datetime.now().day)
+            ultimo_mes = datetime(datetime.now().year, datetime.now().month, datetime.now().day) #toma el ultimo mes
         if i >= len(self.__pila_consultas):
             return cont
-        if self.__pila_consultas[i][1].fecha.year == ultimo_mes.year:
-            if self.__pila_consultas[i][1].fecha.month == ultimo_mes.month:
+        if self.__pila_consultas[i][1].fecha.year == ultimo_mes.year: #verifica que el anio sea el actual
+            if self.__pila_consultas[i][1].fecha.month == ultimo_mes.month: #vefica que el mes sea el actual y suma +1 contador si se cumple
                 cont += 1
         return self.consultas_ultimo_mes(i + 1, cont, ultimo_mes)
 

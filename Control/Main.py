@@ -30,11 +30,11 @@ class Sistema():
 
         # Cargar jerarquía médica de ejemplo
         self.__jerarquia.insertar(Personal(1, "Director", "Director"))
-        self.__jerarquia.insertar(Personal(2, "Jefe Área A", "Jefe"))
+        self.__jerarquia.insertar(Personal(2, "Jefe Área A", "Jefe de Area"))
         self.__jerarquia.insertar(Personal(3, "Doctor 1", "Doctor"))
         self.__jerarquia.insertar(Personal(4, "Doctor 2", "Doctor"))
-        self.__jerarquia.insertar(Personal(5, "Jefe Área B", "Jefe"))
-        self.__jerarquia.insertar(Personal(6, "Doctor 3", "Doctor"))
+        self.__jerarquia.insertar(Personal(5, "Jefe Área B", "Jefe de Area"))
+        self.__jerarquia.insertar(Personal(6, "Resi", "Residente"))
 
 
 # valida la entrada del usuario
@@ -204,10 +204,19 @@ class Sistema():
     def agregar_medico(self):
         cedula = self.pedir_dato("Ingrese la cedula del medico: ", int, "El dato ingresado debe ser un numero entero")
         nombre = input("Nombre: ")
-        puesto = input("Puesto: ")
+        print("""1. Residente
+        2. Doctor
+        3. Jefe de Area
+        4. Director
+        """)
+        puesto = self.validar_rango(1, 4, "Ingrese una opcion: ")
         medico = Personal(cedula, nombre, puesto)
         self.__jerarquia.insertar(medico)
         print("Médico agregado.")
+
+    def asignar_puesto(self, eleccion):
+        dicc_puesto = {1: "Residente", 2: "Doctor", 3: "Jefe de Area", 4: "Director"}
+        return dicc_puesto[eleccion]
 
 
     def estadisticas_recursivas(self):

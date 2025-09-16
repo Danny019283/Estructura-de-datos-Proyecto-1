@@ -11,6 +11,7 @@ class Cola_Emergencia:
         #comprueba que no haya repetidos
         if self.buscar_paciente(diagnostico.paciente.cedula) is not None:
             return False
+
         #agrega el elemento a la cola de prioridad
         heapq.heappush(self.__cola_pacientes, (diagnostico.gravedad, diagnostico))
         fs.guardar_datos("cola de emergencias", self.__cola_pacientes)

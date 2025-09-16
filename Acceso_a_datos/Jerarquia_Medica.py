@@ -2,6 +2,7 @@ from Modelo import Personal
 
 class NodoArbol:
     def __init__(self, personal: Personal):
+
         self.personal = personal
         self.izq = None
         self.der = None
@@ -9,35 +10,34 @@ class NodoArbol:
     def __str__(self):
         return str(self.personal)
 
-
 class Jerarquia_Medica:
     def __init__(self):
         self.__arbol_personal = None
+
+    def obtener_Jerarquia(self, puesto):
+        diccJerarquia = {"Residente": 1, "Doctor": 2, "Jefe de Area": 3, "Director": 4}
+        return diccJerarquia[puesto]
 
     def insertar(self, personal: Personal):
         def _insertar(nodo, nuevo):
             if nodo is None:
                 return NodoArbol(nuevo)
-            if nuevo.cedula < nodo.personal.cedula:
+            if self.obtener_Jerarquia(nuevo.puesto) <= self.obtener_Jerarquia(nodo.personal.puesto):
                 nodo.izq = _insertar(nodo.izq, nuevo)
-            elif nuevo.cedula > nodo.personal.cedula:
+            elif self.obtener_Jerarquia(nuevo.puesto) > self.obtener_Jerarquia(nodo.personal.puesto):
                 nodo.der = _insertar(nodo.der, nuevo)
             return nodo
 
         self.__arbol_personal = _insertar(self.__arbol_personal, personal)
 
-    def buscar(self, cedula: int):
-        def _buscar(nodo, cedula):
+    def buscar(self, cedula):
+        def _buscarInorden(cedula, nodo):
             if nodo is None:
                 return None
-            if cedula == nodo.personal.cedula:
-                return nodo.personal
-            elif cedula < nodo.personal.cedula:
-                return _buscar(nodo.izq, cedula)
-            else:
-                return _buscar(nodo.der, cedula)
-
-        return _buscar(self.__arbol_personal, cedula)
+            if nodo.personal.cedula == cedula:
+                return nodo
+            return _buscarInorden(nodo.izq) + [nodo] + _buscarInorden(nodo.der)
+        return _buscarInorden(cedula, self.__arbol_personal)
 
     def borrar(self, cedula: int):
         def _min_value_node(nodo):
