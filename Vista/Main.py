@@ -8,6 +8,7 @@ from Modelo.Consulta import Consulta
 from Acceso_a_datos.Lista_Paciente import Lista_Paciente
 from Acceso_a_datos.Cola_Emergencia import Cola_Emergencia
 from Acceso_a_datos.Historial_Consultas import Historial_Consultas
+from Acceso_a_datos.Diccionario_Medicos import Diccionario_Medicos
 from Acceso_a_datos.Jerarquia_Medica import Jerarquia_Medica
 
 from datetime import datetime
@@ -21,6 +22,7 @@ class Sistema():
         self.__lista_pacientes = Lista_Paciente()
         self.__cola_emergencia = Cola_Emergencia()
         self.__historial = Historial_Consultas()
+        self.__medicos = Diccionario_Medicos()
         self.__jerarquia = Jerarquia_Medica()
         self.__PRIORIDAD = {
         1: "ALTA",
@@ -28,16 +30,7 @@ class Sistema():
         3: "BAJA"
         }
 
-        # Cargar jerarquía médica de ejemplo
-        self.__jerarquia.insertar(Personal(1, "Director", "Director"))
-        self.__jerarquia.insertar(Personal(2, "Jefe Área A", "Jefe de Area"))
-        self.__jerarquia.insertar(Personal(3, "Doctor 1", "Doctor"))
-        self.__jerarquia.insertar(Personal(4, "Doctor 2", "Doctor"))
-        self.__jerarquia.insertar(Personal(5, "Jefe Área B", "Jefe de Area"))
-        self.__jerarquia.insertar(Personal(6, "Resi", "Residente"))
-
-
-# valida la entrada del usuario
+    # valida la entrada del usuario
     def pedir_dato(self, mensaje: str, tipoDeDato, mensajeError: str):
         while True:
             try:
@@ -49,6 +42,7 @@ class Sistema():
                 print(f"ERROR INESPERADO: {type(e).__name__}\nIntente una vez mas.")
                 input("Presione ENTER")
 
+    #valida un ranog determinado
     def validar_rango(self, min, max, mensaje):
         while True:
             dato = self.pedir_dato(mensaje, int, "El dato ingresado debe ser un numero entero")
@@ -57,7 +51,7 @@ class Sistema():
             else:
                 print(f"el dato debe estar entre {min} y {max}")
 
-
+    #presentacion
     def mostrar_menu(self):
         print("""
     ==========================================
@@ -116,8 +110,50 @@ class Sistema():
     4. Menu principal
     """)
 
+    def cargar_datos_prueba(self):
+        if self.__medicos.esta_vacia() or self.__lista_pacientes.esta_vacia() or self.__lista_pacientes.esta_vacia() or self.__cola_emergencia.esta_vacia() or self.__historial.esta_vacia():
+            # === MEDICOS ===
+            self.__medicos.insertar(Personal(101, "Juan Gómez", "Director"))
+            self.__medicos.insertar(Personal(103, "Carlos Pérez", "Jefe de Area"))
+            self.__medicos.insertar(Personal(102, "María Rodríguez", "Doctor"))
+            self.__medicos.insertar(Personal(104, "Ana Fernández", "Doctor"))
+            self.__medicos.insertar(Personal(105, "Luis Morales", "Residente"))
+
+            # === PACIENTES ===
+            from datetime import date
+            p1 = Paciente(201, "Pedro López", 30, date(2025, 1, 15))
+            p2 = Paciente(202, "Laura Ramírez", 45, date(2025, 2, 20))
+            p3 = Paciente(203, "Andrés Castillo", 55, date(2025, 3, 5))
+            p4 = Paciente(204, "Sofía Méndez", 22, date(2025, 4, 10))
+            p5 = Paciente(205, "Jorge Herrera", 40, date(2025, 5, 8))
+
+            for pac in [p1, p2, p3, p4, p5]:
+                self.__lista_pacientes.insertar_pacientes(pac)
+
+            # === DIAGNOSTICOS EN COLA DE EMERGENCIA ===
+            d1 = Diagnostico("Fractura en pierna", 1, date(2025, 6, 1), p1)
+            d2 = Diagnostico("Dolor de cabeza severo", 3, date(2025, 6, 2), p2)
+            d3 = Diagnostico("Infarto", 0, date(2025, 6, 3), p3)
+            d4 = Diagnostico("Fiebre alta", 2, date(2025, 6, 4), p4)
+            d5 = Diagnostico("Alergia", 4, date(2025, 6, 5), p5)
+
+            for diag in [d1, d2, d3, d4, d5]:
+                self.__cola_emergencia.encolar_y_ordenar(diag)
+
+            # === HISTORIAL (ejemplo: consulta + diagnóstico) ===
+            c1 = Consulta(p1, d1)
+            c2 = Consulta(p2, d2)
+            c3 = Consulta(p3, d3)
+            c4 = Consulta(p4, d4)
+            c5 = Consulta(p5, d5)
+            self.__historial.empujar(c1, d1)
+            self.__historial.empujar(c2, d2)
+            self.__historial.empujar(c3, d3)
+            self.__historial.empujar(c4, d4)
+            self.__historial.empujar(c5, d5)
 
 
+#valida los datos del usuario y posteriormente los agrega a la lista
     def registrar_paciente(self):
         nombre = input("Ingrese nombre del paciente: ")
         cedula = self.pedir_dato("Ingrese la cedula del paciente: ", int, "el dato ingresado debe ser un numero entero")
@@ -134,7 +170,7 @@ class Sistema():
     def mostrar_pacientes(self):
         print(self.__lista_pacientes)
 
-
+    #valida los datos ingresado y agrega la emergencia a la cola
     def registrar_emergencia(self):
         id = self.pedir_dato("Ingrese la cedula del paciente: ", int, "El dato ingresado debe ser un numero entero")
         paciente = self.__lista_pacientes.buscar_paciente(id)
@@ -151,7 +187,7 @@ class Sistema():
             else:
                 print("El paciente ya está en la cola.")
 
-
+    #saca el paciente con amyor prioridad de la cola
     def atender_paciente(self):
         #paciente = (prioridad, diagnostico)
         paciente = self.__cola_emergencia.atender()
@@ -169,6 +205,7 @@ class Sistema():
     def mostrar_espera(self):
         print(self.__cola_emergencia)
 
+    #valida llso datos de entrada y registra las consulta en el historial de consultas
     def registrar_consulta(self):
         cedula = self.pedir_dato("Ingrese la cedula del paciente: ", int, "El dato ingresado debe ser un numero entero")
         paciente = self.__lista_pacientes.buscar_paciente(cedula)
@@ -188,7 +225,7 @@ class Sistema():
     def mostrar_historial(self):
         print(self.__historial)
 
-
+    #deshace la ultima consutla hecha
     def deshacer_ultima(self):
         deshecho = self.__historial.deshacer_ult_cons()
         if deshecho:
@@ -196,11 +233,12 @@ class Sistema():
         else:
             print("No hay consultas para deshacer.")
 
-
+    #muestra la jerarquia del personal medico
     def mostrar_jerarquia(self):
+        self.__jerarquia.construir_arbol(self.__medicos.dicc_medicos)
         print(self.__jerarquia)
 
-
+    #valida los datos de entrada y agrega le medico al diccionario
     def agregar_medico(self):
         cedula = self.pedir_dato("Ingrese la cedula del medico: ", int, "El dato ingresado debe ser un numero entero")
         nombre = input("Nombre: ")
@@ -211,14 +249,15 @@ class Sistema():
         """)
         puesto = self.validar_rango(1, 4, "Ingrese una opcion: ")
         medico = Personal(cedula, nombre, puesto)
-        self.__jerarquia.insertar(medico)
+        self.__medicos.insertar(medico)
         print("Médico agregado.")
 
+    #asigna el puesto a un medico
     def asignar_puesto(self, eleccion):
         dicc_puesto = {1: "Residente", 2: "Doctor", 3: "Jefe de Area", 4: "Director"}
         return dicc_puesto[eleccion]
 
-
+    #muestra las estadicticas del centro medico
     def estadisticas_recursivas(self):
         edad_promedio = self.__lista_pacientes.edad_promedio()
         if edad_promedio == 0:
@@ -232,8 +271,9 @@ class Sistema():
             print(f"Consultas el ultimo mes: {consl_ultimo_mes}")
 
 
-    # === Bucle principal ===
+    # Menu principal
     def menu_principal(self):
+        self.cargar_datos_prueba()
         while True:
             self.mostrar_menu()
             opcion = input("Ingrese una opción: ").strip()

@@ -77,13 +77,13 @@ class Lista_Paciente:
             return []
         return [self.__pacientes[i]] + self.generar_estadis(i + 1)
 
-    def estaVacia(self):
+    def esta_vacia(self):
         if len(self.__pacientes) == 0:
             return True
         return False
 
     def edad_promedio(self, i = 0, suma_edad = 0):
-        if self.estaVacia():
+        if self.esta_vacia():
             return 0
         if i >= len(self.__pacientes):
             return  suma_edad/len(self.__pacientes)
@@ -92,7 +92,7 @@ class Lista_Paciente:
 
 
     def __str__(self):
-        if self.estaVacia():
+        if self.esta_vacia():
             return f"No hay pacientes registrados"
         mostrar = f""
         for paciente in self.__pacientes:

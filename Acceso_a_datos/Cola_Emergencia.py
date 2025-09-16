@@ -4,7 +4,7 @@ from Acceso_a_datos.Manejo_De_Archivos import Manejo_De_Archivos as fs
 
 class Cola_Emergencia:
     def __init__(self):
-        self.__cola_pacientes = fs.cargar_datos("cola de emergencias")
+        self.__cola_pacientes = fs.cargar_datos("Cola de emergencias")
 
     #gravedad baja = 3, media = 2, alta = 1
     def encolar_y_ordenar(self, diagnostico):

@@ -1,81 +1,53 @@
-from Modelo import Personal
-
-class NodoArbol:
-    def __init__(self, personal: Personal):
-
-        self.personal = personal
-        self.izq = None
-        self.der = None
-
-    def __str__(self):
-        return str(self.personal)
-
 class Jerarquia_Medica:
     def __init__(self):
-        self.__arbol_personal = None
+        self.__arbol_puesto = None
 
-    def obtener_Jerarquia(self, puesto):
-        diccJerarquia = {"Residente": 1, "Doctor": 2, "Jefe de Area": 3, "Director": 4}
-        return diccJerarquia[puesto]
+    def obtener_jerarquia(self, puesto):
+        dicc_jerarquia = {"Residente": 1, "Doctor": 2, "Jefe de Area": 3, "Director": 4}
+        return dicc_jerarquia[puesto]
 
-    def insertar(self, personal: Personal):
-        def _insertar(nodo, nuevo):
-            if nodo is None:
-                return NodoArbol(nuevo)
-            if self.obtener_Jerarquia(nuevo.puesto) <= self.obtener_Jerarquia(nodo.personal.puesto):
-                nodo.izq = _insertar(nodo.izq, nuevo)
-            elif self.obtener_Jerarquia(nuevo.puesto) > self.obtener_Jerarquia(nodo.personal.puesto):
-                nodo.der = _insertar(nodo.der, nuevo)
-            return nodo
-
-        self.__arbol_personal = _insertar(self.__arbol_personal, personal)
-
-    def buscar(self, cedula):
-        def _buscarInorden(cedula, nodo):
-            if nodo is None:
-                return None
-            if nodo.personal.cedula == cedula:
-                return nodo
-            return _buscarInorden(nodo.izq) + [nodo] + _buscarInorden(nodo.der)
-        return _buscarInorden(cedula, self.__arbol_personal)
-
-    def borrar(self, cedula: int):
-        def _min_value_node(nodo):
-            actual = nodo
-            while actual.izq is not None:
-                actual = actual.izq
-            return actual
-
-        def _borrar(nodo, cedula):
-            if nodo is None:
-                return nodo
-            if cedula < nodo.personal.cedula:
-                nodo.izq = _borrar(nodo.izq, cedula)
-            elif cedula > nodo.personal.cedula:
-                nodo.der = _borrar(nodo.der, cedula)
+    def construir_arbol(self, dicc):
+        #crea un arbol ABB
+        def _insertar(arbol, nuevo):
+            if arbol is None:
+                return nuevo, None, None
+            medico, izq, der = arbol
+            print(nuevo.puesto)
+            if self.obtener_jerarquia(nuevo.puesto) < self.obtener_jerarquia(arbol[0].puesto):
+                return medico, _insertar(izq, nuevo), der
             else:
-                if nodo.izq is None and nodo.der is None:
-                    return None
-                elif nodo.izq is None:
-                    return nodo.der
-                elif nodo.der is None:
-                    return nodo.izq
-                temp = _min_value_node(nodo.der)
-                nodo.personal = temp.personal
-                nodo.der = _borrar(nodo.der, temp.personal.cedula)
-            return nodo
-        self.__arbol_personal = _borrar(self.__arbol_personal, cedula)
+                return medico, izq, _insertar(der, nuevo)
+        #agrega los medicos la arbol
+        for med in dicc.values():
+            self.__arbol_puesto = _insertar(self.__arbol_puesto, med)
 
     def mostrar_jerarquia(self):
-        def _mostrar(nodo, nivel=0):
-            if nodo is None:
+        def _mostrar(arbol):
+            if arbol is None:
                 return ""
-            resultado = "   " * nivel + str(nodo.personal) + "\n"
-            resultado += _mostrar(nodo.izq, nivel + 1)
-            resultado += _mostrar(nodo.der, nivel + 1)
-            return resultado
+            jerarquia = ""
+            #verifica la jerarquia para dar el formato
+            if self.obtener_jerarquia(arbol[0].puesto) == 3:
+                jerarquia += f" |_"
+            if self.obtener_jerarquia(arbol[0].puesto) == 2:
+                jerarquia += f"     |_"
+            if self.obtener_jerarquia(arbol[0].puesto) == 1:
+                jerarquia += f"         |_"
 
-        return _mostrar(self.__arbol_personal)
+            jerarquia += f"{arbol[0].puesto}\n"
+
+            #recorre el arbol
+            if arbol[1]:
+                jerarquia += f"{_mostrar(arbol[1])}"
+            if arbol[2]:
+                jerarquia += f"{_mostrar(arbol[2])}"
+            return jerarquia
+
+        return _mostrar(self.__arbol_puesto)
 
     def __str__(self):
         return self.mostrar_jerarquia() or "Jerarquía medica vacia"
+
+
+
+
