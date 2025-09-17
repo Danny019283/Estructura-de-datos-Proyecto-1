@@ -1,66 +1,93 @@
 @startuml
-title Gestión Hospitalaria
-
-class Paciente {
-    - cedula: int
-    - nombre: string
-    - edad: int
-}
-
-class Personal {
-    - cedula: int
-    - nombre: string
-    - puesto: string
-}
-
-class Diagnostico {
-    - descripcion: string
-    - gravedad: string
-    - fecha: string
-}
-
-class Lista_Paciente {
-    - pacientes: list
-    + CRUD()
-    + buscar(cedula: int): Paciente
-    + ordenar_edad()
-    + ordenar_fecha_ingreso()
-    + generar_estadis()
-}
-
 class Cola_Emergencia {
-    - cola_pacientes: list
-    + insertar(paciente: Paciente, prioridad: int): bool
-    + primero(): Paciente
-    + atender()
-    + mostrar_espera()
+  - cola_pacientes: list
+  + encolar_y_ordenar(diagnostico: Diagnostico): bool
+  + buscar_paciente(cedula: str): tuple
+  + ver_paciente_mayor_prioridad(): Paciente
+  + atender(): tuple
+  + esta_vacia(): bool
 }
 
-class Consulta {
-    - paciente: Paciente
-    - medico: Personal
+class Diccionario_Medicos {
+  - dicc_medicos: dict
+  + dicc_medicos: dict
+  + insertar(personal: Personal): bool
+  + actualizar(personal: Personal): bool
+  + buscar(cedula: str): Personal
+  + borrar(cedula: str): bool
+  + esta_vacia(): bool
 }
 
 class Historial_Consultas {
-    - pila_consultas: list
-    + empujar(consulta: Consulta)
-    + deshacer_ult_cons()
-    + mostrar_historial()
+  - pila_consultas: list
+  + empujar(consulta: Consulta, diagnostico: Diagnostico): bool
+  + deshacer_ult_cons(): tuple
+  + mostrar_historial(): list
+  + esta_vacia(): bool
+  + consultas_ultimo_mes(i: int, cont: int, ultimo_mes: datetime): int
 }
 
 class Jerarquia_Medica {
-    - arbol_personal: list
-    + insertar(personal: Personal)
-    + borrar(personal: Personal)
-    + buscar(personal: Personal)
-    + mostrar_jerarquia()
+  - arbol_puesto: tuple
+  + obtener_jerarquia(puesto: str): int
+  + construir_arbol(dicc: dict)
+  + mostrar_jerarquia(): str
 }
 
-' Relaciones
-Lista_Paciente "1" o-- "*" Paciente : contiene >
-Diagnostico "0..*" *-- "1" Paciente : tiene >
-Jerarquia_Medica "1" o-- "*" Personal : contiene >
-Cola_Emergencia "1" o-- "0..*" Diagnostico : contiene >
-Historial_Consultas "1" o-- "*" Consulta : contiene >
-Consulta "1" *-- "1" Paciente: tiene
-Consulta "1" *-- "1" Personal: tienel
+class Lista_Paciente {
+  - pacientes: list
+  + insertar_pacientes(paciente: Paciente): bool
+  + actualizar_paciente(paciente: Paciente): bool
+  + borrar_paciente(cedula: str): bool
+  + buscar_paciente(cedula: str): Paciente
+  + ordenar_edad_insercion()
+  + ordenar_fecha_mergesort(arr: list): list
+  + fecha_merge(arr_izq: list, arr_der: list): list
+  + generar_estadis(i: int): list
+  + esta_vacia(): bool
+  + edad_promedio(i: int, suma_edad: int): float
+}
+
+class Consulta {
+  - paciente: Paciente
+  - medico: Personal
+}
+
+class Diagnostico {
+  - descripcion: str
+  - gravedad: int
+  - fecha: datetime
+  - paciente: Paciente
+}
+
+class Paciente {
+  - cedula: str
+  - nombre: str
+  - edad: int
+  - fecha_ingreso: datetime
+}
+
+class Personal {
+  - cedula: str
+  - nombre: str
+  - puesto: str
+}
+
+' Relaciones entre clases
+Cola_Emergencia "1" o-- "0..n" Diagnostico : contiene
+
+Diccionario_Medicos "1" o-- "0..n" Personal : contiene
+
+Historial_Consultas "1" o-- "0..n" Consulta : contiene
+Historial_Consultas "1" o-- "0..n" Diagnostico : contiene
+
+Jerarquia_Medica "1" o-- "0..n" Personal : contiene
+
+Lista_Paciente "1" o-- "0..n" Paciente : contiene
+
+Consulta "1" *-- "1" Paciente : referencia
+Consulta "1" *-- "1" Personal : referencia
+
+Diagnostico "1" -- "1" Paciente : referencia
+
+@enduml
